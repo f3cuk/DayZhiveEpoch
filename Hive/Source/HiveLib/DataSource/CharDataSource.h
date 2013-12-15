@@ -25,7 +25,8 @@ class CharDataSource
 public:
 	virtual ~CharDataSource() {}
 
-	virtual Sqf::Value fetchCharacterInitial( string playerId, int serverId, const string& playerName ) = 0;
+	virtual Sqf::Value fetchCharacters( string playerId ) = 0;
+	virtual Sqf::Value fetchCharacterInitial( string playerId, int serverId, const string& playerName, int characterSlot ) = 0;
 	virtual Sqf::Value fetchCharacterDetails( int characterId ) = 0;
 	virtual Sqf::Value fetchObjectId( Int64 objectUID ) = 0;
 	virtual Sqf::Value fetchTraderObject( int traderObjectId, int action ) = 0;

@@ -50,7 +50,7 @@ void HiveExtApp::setupClock()
 
 int HiveExtApp::main( const std::vector<std::string>& args )
 {
-	logger().information("HiveExt " + GIT_VERSION.substr(0,12));
+	logger().information("HiveExt Axe Cop Edition " + GIT_VERSION.substr(0,12));
 	setupClock();
 
 	if (!this->initialiseService())
@@ -81,6 +81,7 @@ HiveExtApp::HiveExtApp(string suffixDir) : AppServer("HiveExt",suffixDir), _serv
 	handlers[309] = boost::bind(&HiveExtApp::objectInventory,this,_1,true);
 	handlers[310] = boost::bind(&HiveExtApp::objectDelete,this,_1,true);
 	//player/character loads
+	handlers[100] = boost::bind(&HiveExtApp::loadCharacters,this,_1);
 	handlers[101] = boost::bind(&HiveExtApp::loadPlayer,this,_1);
 	handlers[102] = boost::bind(&HiveExtApp::loadCharacterDetails,this,_1);
 	handlers[103] = boost::bind(&HiveExtApp::recordCharacterLogin,this,_1);
@@ -277,12 +278,20 @@ Sqf::Value HiveExtApp::objectPublish( Sqf::Parameters params )
 
 #include "DataSource/CharDataSource.h"
 
+Sqf::Value HiveExtApp::loadCharacters( Sqf::Parameters params )
+{
+	string playerId = Sqf::GetStringAny(params.at(0));
+
+	return _charData->fetchCharacters(playerId);
+}
+
 Sqf::Value HiveExtApp::loadPlayer( Sqf::Parameters params )
 {
 	string playerId = Sqf::GetStringAny(params.at(0));
 	string playerName = Sqf::GetStringAny(params.at(2));
+	int characterSlot = Sqf::GetIntAny(params.at(3));
 
-	return _charData->fetchCharacterInitial(playerId,getServerId(),playerName);
+	return _charData->fetchCharacterInitial(playerId,getServerId(),playerName,characterSlot);
 }
 
 Sqf::Value HiveExtApp::loadCharacterDetails( Sqf::Parameters params )

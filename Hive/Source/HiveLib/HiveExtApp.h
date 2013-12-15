@@ -71,6 +71,7 @@ private:
 	Sqf::Value vehicleMoved(Sqf::Parameters params);
 	Sqf::Value vehicleDamaged(Sqf::Parameters params);
 
+	Sqf::Value loadCharacters(Sqf::Parameters params);
 	Sqf::Value loadPlayer(Sqf::Parameters params);
 	Sqf::Value loadCharacterDetails(Sqf::Parameters params);
 	

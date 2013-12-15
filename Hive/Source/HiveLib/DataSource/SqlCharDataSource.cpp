@@ -31,7 +31,103 @@ SqlCharDataSource::SqlCharDataSource( Poco::Logger& logger, shared_ptr<Database>
 
 SqlCharDataSource::~SqlCharDataSource() {}
 
-Sqf::Value SqlCharDataSource::fetchCharacterInitial( string playerId, int serverId, const string& playerName )
+Sqf::Value SqlCharDataSource::fetchCharacters( string playerId )
+{
+	//get characters from db (dead or alive)
+	auto charsRes = getDB()->queryParams(
+		("SELECT `CharacterID`, `Slot`, `"+_wsFieldName+"`, `Alive`, `Generation`, `Humanity`, `KillsZ`, `HeadshotsZ`, `KillsH`, `KillsB`, `DistanceFoot`, `Model`, `Infected`, "
+		"TIMESTAMPDIFF(MINUTE,`LastLogin`,NOW()) as `LastLoginDiff`, "
+		"TIMESTAMPDIFF(MINUTE,`Datestamp`,`LastLogin`) as `SurvivalTime` "
+		"FROM `Character_DATA` `cd1` "
+		"INNER JOIN (SELECT MAX(`CharacterID`) `MaxCharacterID` FROM `Character_DATA` WHERE `"+_idFieldName+"` = '%s' GROUP BY `Slot`) `cd2` "
+		"ON `cd1`.`CharacterID` = `cd2`.`MaxCharacterID` "
+		"ORDER BY `Slot`").c_str(), getDB()->escape(playerId).c_str());
+
+	/*
+	//get characters from db
+	auto charsRes = getDB()->queryParams(
+		("SELECT `CharacterID`, `Slot`, `"+_wsFieldName+"`, `Generation`, `Humanity`, `KillsZ`, `HeadshotsZ`, `KillsH`, `KillsB`, `DistanceFoot`, `Model`, `Infected`, "
+		"TIMESTAMPDIFF(MINUTE,`LastLogin`,NOW()) as `LastLoginDiff`, "
+		"TIMESTAMPDIFF(MINUTE,`Datestamp`,`LastLogin`) as `SurvivalTime` "
+		"FROM `Character_DATA` "
+		"WHERE `"+_idFieldName+"` = '%s' AND `Alive` = 1 "
+		"ORDER BY `Slot`").c_str(), getDB()->escape(playerId).c_str());
+	*/
+
+	Sqf::Parameters retVal;
+	Sqf::Parameters charsData;
+	if (charsRes) {
+		retVal.push_back(string("PASS"));
+		while (charsRes->fetchRow())
+		{
+			int characterId = charsRes->at(0).getUInt32();
+			int slot = charsRes->at(1).getUInt8();
+			Sqf::Value worldSpace = Sqf::Parameters(); //empty worldspace
+			try
+			{
+				worldSpace = lexical_cast<Sqf::Value>(charsRes->at(2).getString());
+			}
+			catch(bad_lexical_cast)
+			{
+				_logger.warning("Invalid Worldspace for CharacterID("+lexical_cast<string>(characterId)+"): "+charsRes->at(2).getString());
+			}
+			int alive = charsRes->at(3).getUInt8();
+			int generation = charsRes->at(4).getUInt32();
+			int humanity = charsRes->at(5).getInt32();
+			int killsZ = charsRes->at(6).getUInt32();
+			int headshotsZ = charsRes->at(7).getUInt32();
+			int killsH = charsRes->at(8).getUInt32();
+			int killsB = charsRes->at(9).getUInt32();
+			int distanceFoot = charsRes->at(10).getInt32();
+			string model = "";
+			try
+			{
+				model = boost::get<string>(lexical_cast<Sqf::Value>(charsRes->at(11).getString()));
+			}
+			catch(...)
+			{
+				model = charsRes->at(11).getString();
+			}
+			int infected = charsRes->at(12).getInt8();
+			int lastLoginDiff = charsRes->at(13).getInt32();
+			int survivalTime = charsRes->at(14).getInt32();
+
+			Sqf::Parameters stats;
+			stats.push_back(killsZ);
+			stats.push_back(headshotsZ);
+			stats.push_back(killsH);
+			stats.push_back(killsB);
+
+			Sqf::Parameters charData;
+			charData.push_back(lexical_cast<string>(characterId));
+			charData.push_back(slot);
+			charData.push_back(worldSpace);
+			charData.push_back(alive);
+			charData.push_back(generation);
+			charData.push_back(humanity);
+			charData.push_back(stats);
+			charData.push_back(distanceFoot);
+			charData.push_back(model);
+			charData.push_back(infected);
+			charData.push_back(lastLoginDiff);
+			charData.push_back(survivalTime);
+
+			charsData.push_back(charData);
+		}
+	}
+	else
+	{
+		retVal.push_back(string("ERROR"));
+	}
+
+	retVal.push_back(charsData);
+	//hive interface version
+	retVal.push_back(0.96f);
+
+	return retVal;
+}
+
+Sqf::Value SqlCharDataSource::fetchCharacterInitial( string playerId, int serverId, const string& playerName, int characterSlot )
 {
 	bool newPlayer = false;
 	//make sure player exists in db
@@ -70,7 +166,7 @@ Sqf::Value SqlCharDataSource::fetchCharacterInitial( string playerId, int server
 		"TIMESTAMPDIFF(MINUTE,`Datestamp`,`LastLogin`) as `SurvivalTime`, "
 		"TIMESTAMPDIFF(MINUTE,`LastAte`,NOW()) as `MinsLastAte`, "
 		"TIMESTAMPDIFF(MINUTE,`LastDrank`,NOW()) as `MinsLastDrank`, "
-		"`Model` FROM `Character_DATA` WHERE `"+_idFieldName+"` = '%s' AND `Alive` = 1 ORDER BY `CharacterID` DESC LIMIT 1").c_str(), getDB()->escape(playerId).c_str());
+		"`Model` FROM `Character_DATA` WHERE `"+_idFieldName+"` = '%s' AND `Slot` = %d AND `Alive` = 1 ORDER BY `CharacterID` DESC LIMIT 1").c_str(), getDB()->escape(playerId).c_str(), characterSlot);
 	int infected = 0;
 	bool newChar = false; //not a new char
 	int characterId = -1; //invalid charid
@@ -148,7 +244,7 @@ Sqf::Value SqlCharDataSource::fetchCharacterInitial( string playerId, int server
 		//try getting previous character info
 		{
 			auto prevCharRes = getDB()->queryParams(
-				("SELECT `Generation`, `Humanity`, `Model`, `Infected` FROM `Character_DATA` WHERE `"+_idFieldName+"` = '%s' AND `Alive` = 0 ORDER BY `CharacterID` DESC LIMIT 1").c_str(), getDB()->escape(playerId).c_str());
+				("SELECT `Generation`, `Humanity`, `Model`, `Infected` FROM `Character_DATA` WHERE `"+_idFieldName+"` = '%s' AND `Slot` = %d AND `Alive` = 0 ORDER BY `CharacterID` DESC LIMIT 1").c_str(), getDB()->escape(playerId).c_str(), characterSlot);
 			if (prevCharRes && prevCharRes->fetchRow())
 			{
 				generation = prevCharRes->at(0).getInt32();
@@ -172,9 +268,10 @@ Sqf::Value SqlCharDataSource::fetchCharacterInitial( string playerId, int server
 		//insert new char into db
 		{
 			auto stmt = getDB()->makeStatement(_stmtInsertNewCharacter, 
-				"INSERT INTO `Character_DATA` (`"+_idFieldName+"`, `InstanceID`, `"+_wsFieldName+"`, `Inventory`, `Backpack`, `Medical`, `Generation`, `Datestamp`, `LastLogin`, `LastAte`, `LastDrank`, `Humanity`) "
-				"VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)");
+				"INSERT INTO `Character_DATA` (`"+_idFieldName+"`, `Slot`, `InstanceID`, `"+_wsFieldName+"`, `Inventory`, `Backpack`, `Medical`, `Generation`, `Datestamp`, `LastLogin`, `LastAte`, `LastDrank`, `Humanity`) "
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)");
 			stmt->addString(playerId);
+			stmt->addUInt8(characterSlot);
 			stmt->addInt32(serverId);
 			stmt->addString(lexical_cast<string>(worldSpace));
 			stmt->addString(lexical_cast<string>(inventory));
@@ -506,5 +603,3 @@ Sqf::Value SqlCharDataSource::fetchTraderObject( int traderObjectId, int action)
 	}
 
 }
-
-
