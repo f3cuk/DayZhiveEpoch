@@ -28,7 +28,6 @@ public:
 	virtual Sqf::Value fetchCharacters( string playerId ) = 0;
 	virtual Sqf::Value fetchCharacterInitial( string playerId, int serverId, const string& playerName, int characterSlot ) = 0;
 	virtual Sqf::Value fetchCharacterDetails( int characterId ) = 0;
-	virtual Sqf::Value fetchObjectId( Int64 objectUID ) = 0;
 	virtual Sqf::Value fetchTraderObject( int traderObjectId, int action ) = 0;
 	typedef map<string,Sqf::Value> FieldsType;
 	virtual bool updateCharacter( int characterId, int serverId, const FieldsType& fields ) = 0;
