@@ -130,6 +130,7 @@
       </AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
+      <Command></Command>
       <Message>Generating Git version file</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
