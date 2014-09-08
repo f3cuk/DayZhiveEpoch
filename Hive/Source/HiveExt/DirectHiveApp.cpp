@@ -23,6 +23,7 @@ DirectHiveApp::DirectHiveApp(string suffixDir) : HiveExtApp(suffixDir) {}
 #include "Shared/Library/Database/DatabaseLoader.h"
 #include "HiveLib/DataSource/SqlCharDataSource.h"
 #include "HiveLib/DataSource/SqlObjDataSource.h"
+#include "HiveLib/DataSource/SqlDataSourceCustom.h"
 
 bool DirectHiveApp::initialiseService()
 {
