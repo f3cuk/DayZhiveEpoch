@@ -332,7 +332,7 @@ Sqf::Value SqlCharDataSource::fetchCharacterDetails( int characterId )
 	Sqf::Parameters retVal;
 	//get details from db
 	auto charDetRes = getDB()->queryParams(
-		"SELECT `%s`, `Medical`, `Generation`, `KillsZ`, `HeadshotsZ`, `KillsH`, `KillsB`, `CurrentState`, `Humanity`, `InstanceID` "
+		"SELECT `%s`, `Medical`, `Generation`, `KillsZ`, `HeadshotsZ`, `KillsH`, `KillsB`, `CurrentState`, `Humanity`, `InstanceID`, `Money` "
 		"FROM `Character_DATA` WHERE `CharacterID`=%d", _wsFieldName.c_str(), characterId);
 
 	if (charDetRes && charDetRes->fetchRow())
@@ -381,6 +381,7 @@ Sqf::Value SqlCharDataSource::fetchCharacterDetails( int characterId )
 			}
 			humanity = charDetRes->at(8).getInt32();
 			instance = charDetRes->at(9).getInt32();
+			money = charDetRes->at(10).getInt32();
 		}
 
 		retVal.push_back(string("PASS"));
@@ -390,6 +391,7 @@ Sqf::Value SqlCharDataSource::fetchCharacterDetails( int characterId )
 		retVal.push_back(worldSpace);
 		retVal.push_back(humanity);
 		retVal.push_back(instance);
+		retVal.push_back(money);
 	}
 	else
 	{
@@ -425,7 +427,7 @@ bool SqlCharDataSource::updateCharacter( int characterId, int serverId, const Fi
 		}
 		//addition integeroids
 		else if (name == "KillsZ" || name == "HeadshotsZ" || name == "DistanceFoot" || name == "Duration" ||
-			name == "KillsH" || name == "KillsB" || name == "Humanity")
+			name == "KillsH" || name == "KillsB" || name == "Humanity" || name == "Money")
 		{
 			int integeroid = static_cast<int>(Sqf::GetDouble(val));
 			char intSign = '+';

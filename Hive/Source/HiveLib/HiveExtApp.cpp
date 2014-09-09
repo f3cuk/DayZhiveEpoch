@@ -586,10 +586,15 @@ Sqf::Value HiveExtApp::playerUpdate( Sqf::Parameters params )
 			int humanityDiff = static_cast<int>(Sqf::GetDouble(params.at(15)));
 			if (humanityDiff != 0) fields["Humanity"] = humanityDiff;
 		}
+		if (!Sqf::IsNull(params.at(16)))
+		{
+			int Money = static_cast<int>(Sqf::GetDouble(params.at(16)));
+			if (Money != 0) fields["Money"] = Money;
+		}
 	}
 	catch (const std::out_of_range&)
 	{
-		logger().warning("Update of character " + lexical_cast<string>(characterId) + " only had " + lexical_cast<string>(params.size()) + " parameters out of 16");
+		logger().warning("Update of character " + lexical_cast<string>(characterId) + " only had " + lexical_cast<string>(params.size()) + " parameters out of 17");
 	}
 
 	if (fields.size() > 0)
