@@ -105,12 +105,6 @@ private:
 	Sqf::Value streamCustom(Sqf::Parameters params);
 	Sqf::Value customExecute(Sqf::Parameters params);
 
-	Sqf::Value dataRequest(Sqf::Parameters params, bool async = false);
-	Sqf::Value dataStatus(Sqf::Parameters params);
-	Sqf::Value dataFetchRow(Sqf::Parameters params);
-	Sqf::Value dataClose(Sqf::Parameters params);
-
-	Sqf::Value changeTableAccess(Sqf::Parameters params);
 	Sqf::Value serverShutdown(Sqf::Parameters params);
 
 };

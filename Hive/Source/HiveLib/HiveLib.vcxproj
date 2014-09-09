@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataSource\CharDataSource.h" />
-    <ClInclude Include="DataSource\CustomDataSource.h" />
     <ClInclude Include="DataSource\CustDataSource.h" />
     <ClInclude Include="DataSource\DataSource.h" />
     <ClInclude Include="DataSource\DataSourceCustom.h" />
@@ -29,7 +28,6 @@
   <ItemGroup>
     <ClCompile Include="DataSource\CharDataSource.cpp" />
     <ClCompile Include="DataSource\CustDataSource.cpp" />
-    <ClCompile Include="DataSource\CustomDataSource.cpp" />
     <ClCompile Include="DataSource\SqlCharDataSource.cpp" />
     <ClCompile Include="DataSource\SqlDataSourceCustom.cpp" />
     <ClCompile Include="DataSource\SqlObjDataSource.cpp" />

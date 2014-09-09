@@ -70,8 +70,9 @@ bool DirectHiveApp::initialiseService()
 		_objData.reset(new SqlObjDataSource(logger(),_objDb,objConf.get()));
 	}
 
-	//Create custom datasource
-	_customData.reset(new CustomDataSource(logger(),_charDb,_objDb));
+	{
+		_customData.reset(new SqlCustDataSource(logger(), _objDb));
+	}
 
 	_charDb->allowAsyncOperations();	
 	if (_objDb != _charDb)
