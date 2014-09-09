@@ -342,6 +342,7 @@ Sqf::Value SqlCharDataSource::fetchCharacterDetails( int characterId )
 		int generation = 1;
 		Sqf::Value stats = lexical_cast<Sqf::Value>("[0,0,0,0]"); //killsZ, headZ, killsH, killsB
 		Sqf::Value currentState = Sqf::Parameters(); //empty state (aiming, etc)
+		int money = 0;
 		int humanity = 2500;
 		int instance = 1;
 		//get stuff from row
@@ -576,5 +577,3 @@ Sqf::Value SqlCharDataSource::fetchTraderObject( int traderObjectId, int action)
 	}
 
 }
-
-
