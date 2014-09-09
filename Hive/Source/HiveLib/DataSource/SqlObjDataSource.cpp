@@ -18,10 +18,12 @@
 
 #include "SqlObjDataSource.h"
 #include "Database/Database.h"
-#include <inttypes.h>
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
+
+#define PRIu64 "I64u"
+
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
@@ -303,7 +305,7 @@ Sqf::Value SqlObjDataSource::fetchObjectId( int serverId, Int64 objectIdent )
 {
 	Sqf::Parameters retVal;
 	//get details from db
-	auto worldObjsRes = getDB()->queryParams("SELECT `ObjectID` FROM `%s` WHERE `Instance` = %d AND `ObjectUID` = %"PRIu64"", _objTableName.c_str(), serverId, objectIdent);
+	auto worldObjsRes = getDB()->queryParams("SELECT `ObjectID` FROM `%s` WHERE `Instance` = %d AND `ObjectUID` = %" PRIu64 "", _objTableName.c_str(), serverId, objectIdent);
 
 	if (worldObjsRes && worldObjsRes->fetchRow())
 	{
