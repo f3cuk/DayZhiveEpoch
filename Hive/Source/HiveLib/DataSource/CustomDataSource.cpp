@@ -1,15 +1,16 @@
-#include "SqlDataSourceCustom.h"
+#include "CustomDataSource.h"
 #include "Database/Database.h"
-#include <boost/lexical_cast.hpp>
+
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/lexical_cast.hpp>
 
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
-SqlCustDataSource::SqlCustDataSource(Poco::Logger& logger, shared_ptr<Database> db) : SqlDataSource(logger, db) { }
-SqlCustDataSource::~SqlCustDataSource() {}
+CustomDataSource::CustomDataSource(Poco::Logger& logger, shared_ptr<Database> db) : SqlDataSource(logger, db) { }
+CustomDataSource::~CustomDataSource() {}
 
-void SqlCustDataSource::populateQuery(string query, Sqf::Parameters& params, CustomDataQueue& queue)
+void CustomDataSource::populateQuery(string query, Sqf::Parameters& params, CustomDataQueue& queue)
 {
 	for (int i = 0; i < params.size(); i++)
 	{
@@ -39,7 +40,7 @@ void SqlCustDataSource::populateQuery(string query, Sqf::Parameters& params, Cus
 		queue.push(custParams);
 	}
 }
-bool SqlCustDataSource::customExecute(string query, Sqf::Parameters& params) {
+bool CustomDataSource::customExecute(string query, Sqf::Parameters& params) {
 	static SqlStatementID stmtId;
 
 	auto stmt = getDB()->makeStatement(stmtId, query);

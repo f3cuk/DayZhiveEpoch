@@ -24,7 +24,7 @@
 #include "Sqf.h"
 #include "DataSource/CharDataSource.h"
 #include "DataSource/ObjDataSource.h"
-#include "DataSource/DataSourceCustom.h"
+#include "DataSource/CustomDataSource.h"
 
 #include <boost/function.hpp>
 #include <boost/date_time.hpp>

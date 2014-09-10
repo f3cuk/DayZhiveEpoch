@@ -23,7 +23,7 @@ DirectHiveApp::DirectHiveApp(string suffixDir) : HiveExtApp(suffixDir) {}
 #include "Shared/Library/Database/DatabaseLoader.h"
 #include "HiveLib/DataSource/SqlCharDataSource.h"
 #include "HiveLib/DataSource/SqlObjDataSource.h"
-#include "HiveLib/DataSource/SqlDataSourceCustom.h"
+#include "HiveLib/DataSource/CustomDataSource.h"
 
 bool DirectHiveApp::initialiseService()
 {
@@ -70,9 +70,7 @@ bool DirectHiveApp::initialiseService()
 		_objData.reset(new SqlObjDataSource(logger(),_objDb,objConf.get()));
 	}
 
-	{
-		_customData.reset(new SqlCustDataSource(logger(), _objDb));
-	}
+	_customData.reset(new CustomDataSource(logger(), _objDb));
 
 	_charDb->allowAsyncOperations();	
 	if (_objDb != _charDb)
