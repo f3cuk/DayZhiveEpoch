@@ -201,6 +201,26 @@ void SqlObjDataSource::populateTraderObjects( int characterId, ServerObjectsQueu
 	}
 }
 
+bool SqlObjDataSource::setMoney( int money, int vaultId )
+{
+	unique_ptr<SqlStatement> stmt;
+
+	stmt = getDB()->makeStatement(_stmtUpdateObjectByID, "UPDATE `"+_objTableName+"` SET `Money` = ? WHERE `ObjectID` = ?");
+
+	stmt->addInt64(money);
+	stmt->addInt64(vaultId);
+
+	bool exRes = stmt->execute();
+	poco_assert(exRes == true);
+
+	return exRes;
+}
+
+bool SqlObjDataSource::getMoney( int money, int vaultId )
+{
+	return true; // to do	
+}
+
 bool SqlObjDataSource::updateObjectInventory( int serverId, Int64 objectIdent, bool byUID, const Sqf::Value& inventory )
 {
 	unique_ptr<SqlStatement> stmt;

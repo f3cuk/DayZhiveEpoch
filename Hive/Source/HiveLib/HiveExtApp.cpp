@@ -102,7 +102,7 @@ void HiveExtApp::setupClock()
 
 int HiveExtApp::main( const std::vector<std::string>& args )
 {
-	logger().information("HiveExt Axe Cop Edition v2");
+	logger().information("HiveExt f3cuk");
 	setupClock();
 
 	if (!this->initialiseService())
@@ -137,7 +137,7 @@ HiveExtApp::HiveExtApp(string suffixDir) : AppServer("HiveExt",suffixDir), _serv
 
 	handlers[309] = boost::bind(&HiveExtApp::objectInventory,this,_1,true);
 	handlers[310] = boost::bind(&HiveExtApp::objectDelete,this,_1,true);
-	handlers[400] = boost::bind(&HiveExtApp::serverShutdown,this,_1);		//Shut down the hiveExt instance
+	handlers[400] = boost::bind(&HiveExtApp::serverShutdown,this,_1);
 	//player/character loads
 	handlers[100] = boost::bind(&HiveExtApp::loadCharacters, this, _1);
 	handlers[101] = boost::bind(&HiveExtApp::loadPlayer,this,_1);
@@ -147,6 +147,10 @@ HiveExtApp::HiveExtApp(string suffixDir) : AppServer("HiveExt",suffixDir), _serv
 	handlers[201] = boost::bind(&HiveExtApp::playerUpdate,this,_1);
 	handlers[202] = boost::bind(&HiveExtApp::playerDeath,this,_1);
 	handlers[203] = boost::bind(&HiveExtApp::playerInit,this,_1);
+
+	//vault access
+	handlers[600] = boost::bind(&HiveExtApp::setMoney,this,_1);
+	handlers[601] = boost::bind(&HiveExtApp::getMoney,this,_1);
 
 	//custom procedures
 	handlers[998] = boost::bind(&HiveExtApp::customExecute, this, _1);
@@ -336,6 +340,24 @@ Sqf::Value HiveExtApp::streamObjects( Sqf::Parameters params )
 
 		return retVal;
 	}
+}
+
+Sqf::Value HiveExtApp::setMoney( Sqf::Parameters params )
+{
+	int money = Sqf::GetIntAny(params.at(0));
+	int vaultId = Sqf::GetIntAny(params.at(1));
+
+	if (vaultId != 0)
+		return ReturnBooleanStatus(_objData->setMoney(money,vaultId));
+	
+	logger().warning("Could not set update money (" + lexical_cast<string>(money) + ") on vault with ID " + lexical_cast<string>(vaultId));
+
+	return ReturnBooleanStatus(false);
+}
+
+Sqf::Value HiveExtApp::getMoney( Sqf::Parameters params )
+{
+	int vaultId = Sqf::GetIntAny(params.at(0));
 }
 
 Sqf::Value HiveExtApp::objectInventory( Sqf::Parameters params, bool byUID /*= false*/ )
