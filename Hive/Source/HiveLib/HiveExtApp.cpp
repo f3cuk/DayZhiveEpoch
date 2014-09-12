@@ -149,8 +149,7 @@ HiveExtApp::HiveExtApp(string suffixDir) : AppServer("HiveExt",suffixDir), _serv
 	handlers[203] = boost::bind(&HiveExtApp::playerInit,this,_1);
 
 	//vault access
-	handlers[600] = boost::bind(&HiveExtApp::setMoney,this,_1);
-	handlers[601] = boost::bind(&HiveExtApp::getMoney,this,_1);
+	handlers[600] = boost::bind(&HiveExtApp::Money,this,_1);
 
 	//custom procedures
 	handlers[998] = boost::bind(&HiveExtApp::customExecute, this, _1);
@@ -342,22 +341,15 @@ Sqf::Value HiveExtApp::streamObjects( Sqf::Parameters params )
 	}
 }
 
-Sqf::Value HiveExtApp::setMoney( Sqf::Parameters params )
+Sqf::Value HiveExtApp::Money( Sqf::Parameters params )
 {
-	int money = Sqf::GetIntAny(params.at(0));
+	int Money = static_cast<int>(Sqf::GetDouble(params.at(0)));
 	int vaultId = Sqf::GetIntAny(params.at(1));
 
 	if (vaultId != 0)
-		return ReturnBooleanStatus(_objData->setMoney(money,vaultId));
+		return ReturnBooleanStatus(_objData->updateMoney(Money,vaultId));
 	
-	logger().warning("Could not set update money (" + lexical_cast<string>(money) + ") on vault with ID " + lexical_cast<string>(vaultId));
-
-	return ReturnBooleanStatus(false);
-}
-
-Sqf::Value HiveExtApp::getMoney( Sqf::Parameters params )
-{
-	int vaultId = Sqf::GetIntAny(params.at(0));
+	return ReturnBooleanStatus(true);
 }
 
 Sqf::Value HiveExtApp::objectInventory( Sqf::Parameters params, bool byUID /*= false*/ )

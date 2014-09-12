@@ -35,14 +35,13 @@ public:
 
 	bool updateObjectInventory( int serverId, Int64 objectIdent, bool byUID, const Sqf::Value& inventory ) override;
 	bool deleteObject( int serverId, Int64 objectIdent, bool byUID ) override;
-	bool setMoney( int money, int vaultId ) override;
+	bool updateMoney( int money, int vaultId ) override;
 	bool updateDatestampObject( int serverId, Int64 objectIdent, bool byUID ) override;
 	bool updateVehicleMovement( int serverId, Int64 objectIdent, const Sqf::Value& worldspace, double fuel ) override;
 	bool updateVehicleStatus( int serverId, Int64 objectIdent, const Sqf::Value& hitPoints, double damage ) override;
 	bool createObject( int serverId, const string& className, double damage, int characterId, 
 		const Sqf::Value& worldSpace, const Sqf::Value& inventory, const Sqf::Value& hitPoints, double fuel, Int64 uniqueId ) override;
 	Sqf::Value fetchObjectId( int serverId, Int64 objectIdent ) override;
-	Sqf::Value getMoney( int vaultId ) override;
 private:
 	string _objTableName;
 	int _cleanupPlacedDays;
@@ -52,6 +51,7 @@ private:
 	SqlStatementID _stmtDeleteOldObject;
 	SqlStatementID _stmtUpdateObjectbyUID;
 	SqlStatementID _stmtUpdateObjectByID;
+	SqlStatementID _stmtupdateMoneyByID;
 	SqlStatementID _stmtDeleteObjectByUID;
 	SqlStatementID _stmtDeleteObjectByID;
 	SqlStatementID _stmtUpdateDatestampObjectByUID;

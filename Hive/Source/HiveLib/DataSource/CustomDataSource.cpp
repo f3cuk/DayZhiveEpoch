@@ -12,6 +12,7 @@ CustomDataSource::~CustomDataSource() {}
 
 void CustomDataSource::populateQuery(string query, Sqf::Parameters& params, CustomDataQueue& queue)
 {
+
 	for (int i = 0; i < params.size(); i++)
 	{
 		query = boost::algorithm::replace_nth_copy(query, "?", i, Sqf::GetStringAny(params.at(i)));
@@ -42,8 +43,10 @@ void CustomDataSource::populateQuery(string query, Sqf::Parameters& params, Cust
 }
 bool CustomDataSource::customExecute(string query, Sqf::Parameters& params) {
 	static SqlStatementID stmtId;
+	
+	unique_ptr<SqlStatement> stmt;
 
-	auto stmt = getDB()->makeStatement(stmtId, query);
+	stmt = getDB()->makeStatement(stmtId, query);
 
 	for (int i = 0; i < params.size(); i++)
 	{

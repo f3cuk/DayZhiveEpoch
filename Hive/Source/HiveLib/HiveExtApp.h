@@ -82,6 +82,8 @@ private:
 	Sqf::Value objectReturnId(Sqf::Parameters params);
 	Sqf::Value objectInventory(Sqf::Parameters params, bool byUID = false);
 	Sqf::Value objectDelete(Sqf::Parameters params, bool byUID = false);
+	
+	Sqf::Value Money(Sqf::Parameters params);
 
 	Sqf::Value vehicleMoved(Sqf::Parameters params);
 	Sqf::Value vehicleDamaged(Sqf::Parameters params);
@@ -93,7 +95,6 @@ private:
 	Sqf::Value loadTraderDetails(Sqf::Parameters params);
 	Sqf::Value tradeObject(Sqf::Parameters params);
 	Sqf::Value datestampObjectUpdate(Sqf::Parameters params, bool byUID = false);
-	
 
 	Sqf::Value recordCharacterLogin(Sqf::Parameters params);
 
